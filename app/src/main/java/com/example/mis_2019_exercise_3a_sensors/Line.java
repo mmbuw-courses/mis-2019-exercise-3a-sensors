@@ -10,15 +10,24 @@ import java.nio.FloatBuffer;
 public class Line {
 
     private FloatBuffer vertexBuffer;
-    private final int mProgram;
+    private int mProgram;
     private int positionHandle;
     private int colorHandle;
 
     private final String vertexShaderCode =
-            "attribute vec4 vPosition;" +
+            // This matrix member variable provides a hook to manipulate
+            // the coordinates of the objects that use this vertex shader
+            "uniform mat4 uMVPMatrix;" +
+                    "attribute vec4 vPosition;" +
                     "void main() {" +
-                    "  gl_Position = vPosition;" +
+                    // the matrix must be included as a modifier of gl_Position
+                    // Note that the uMVPMatrix factor *must be first* in order
+                    // for the matrix multiplication product to be correct.
+                    "  gl_Position = uMVPMatrix * vPosition;" +
                     "}";
+
+    // Use to access and set the view transformation
+    private int vPMatrixHandle;
 
     private final String fragmentShaderCode =
             "precision mediump float;" +
@@ -30,7 +39,7 @@ public class Line {
     // number of coordinates per Vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     // default values
-    static float lineCoords[] = {
+    float lineCoords[] = {
             0.0f,  0.0f, 0.0f,   // start
             1.0f, 0.0f, 0.0f}; // end
 
@@ -38,10 +47,37 @@ public class Line {
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     // define default color
-    float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float color[] = {1.0f, 1.0f, 1.0f, 1.0f };
 
 
     public Line(){
+        initLineGL();
+    }
+
+    public Line(float f1, float f2, float f3, float f4, float f5, float f6){
+        lineCoords[0] = f1;
+        lineCoords[1] = f2;
+        lineCoords[2] = f3;
+        lineCoords[3] = f4;
+        lineCoords[4] = f5;
+        lineCoords[5] = f6;
+        initLineGL();
+    }
+
+    public Line(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9){
+        lineCoords[0] = f1;
+        lineCoords[1] = f2;
+        lineCoords[2] = f3;
+        lineCoords[3] = f4;
+        lineCoords[4] = f5;
+        lineCoords[5] = f6;
+        color[0] = f7;
+        color[1] = f8;
+        color[2] = f9;
+        initLineGL();
+    }
+
+    public void initLineGL(){
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
@@ -73,7 +109,7 @@ public class Line {
     }
 
 
-    public void draw() {
+    public void draw(float[] mvpMatrix) {
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
 
@@ -94,10 +130,32 @@ public class Line {
         // Set color for drawing the line
         GLES20.glUniform4fv(colorHandle, 1, color, 0);
 
+        // get handle to shape's transformation matrix
+        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+
+        // Pass the projection and view transformation to the shader
+        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
+
+
         // Draw the line
         GLES20.glDrawArrays(GLES20.GL_LINES, 0, vertexCount);
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(positionHandle);
+    }
+
+    public void setLine(float f1, float f2, float f3, float f4, float f5, float f6){
+        lineCoords[0] = f1;
+        lineCoords[1] = f2;
+        lineCoords[2] = f3;
+        lineCoords[3] = f4;
+        lineCoords[4] = f5;
+        lineCoords[5] = f6;
+    }
+
+    public void setColor(float f1, float f2, float f3){
+        color[0] = f1;
+        color[1] = f2;
+        color[2] = f3;
     }
 }

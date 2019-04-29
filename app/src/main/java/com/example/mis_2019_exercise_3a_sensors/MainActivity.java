@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Context context;
     private GLSurfaceView glView;
-    private int duration = Toast.LENGTH_LONG;;
+    private int duration = Toast.LENGTH_SHORT;;
     private SeekBar refreshRate;
     private SeekBar windowSizeFFT;
     private Sensor sensorAcc;
