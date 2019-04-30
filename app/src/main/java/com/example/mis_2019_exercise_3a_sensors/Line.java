@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.lang.Math;
 
 // https://developer.android.com/training/graphics/opengl/shapes
 public class Line {
@@ -38,19 +39,23 @@ public class Line {
 
     // number of coordinates per Vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    // default values
-    float lineCoords[] = {
-            0.0f,  0.0f, 0.0f,   // start
-            1.0f, 0.0f, 0.0f}; // end
+
+    float[] lineCoords = new float[6];
+    float[] color = new float[6];
 
     private final int vertexCount = lineCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    // define default color
-    float color[] = {1.0f, 1.0f, 1.0f, 1.0f };
-
-
     public Line(){
+        lineCoords[0] = 0.0f;
+        lineCoords[1] = 0.0f;
+        lineCoords[2] = 0.0f;
+        lineCoords[3] = 1.0f;
+        lineCoords[4] = 1.0f;
+        lineCoords[5] = 1.0f;
+        color[0] = 1.0f;
+        color[1] = 1.0f;
+        color[2] = 1.0f;
         initLineGL();
     }
 
@@ -157,5 +162,9 @@ public class Line {
         color[0] = f1;
         color[1] = f2;
         color[2] = f3;
+    }
+
+    public double lineLength(){
+        return Math.sqrt(Math.pow((lineCoords[3]-lineCoords[0]), 2) + Math.pow((lineCoords[1] - lineCoords[4]), 2) + Math.pow((lineCoords[2] - lineCoords [5]), 2));
     }
 }

@@ -10,30 +10,32 @@ import javax.microedition.khronos.opengles.GL10;
 // https://developer.android.com/training/graphics/opengl/draw
 // https://developer.android.com/training/graphics/opengl/projection
 public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
-    private Line xAxis;
-    private Line yAxis;
-    private Line zAxis;
-    private Line magnitude;
+    public Line xAxis;
+    public Line yAxis;
+    public Line zAxis;
+    public Line magnitude;
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
+    public float[] linear_acceleration = new float[3];
     private final float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private float[] rotationMatrix = new float[16];
+    private float[] scaleMatrix = new float[16];
 
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // x-axis in crimson red
-        xAxis = new Line(0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 220.0f/255.0f, 20.0f/255.0f, 60.0f/255.0f);
+        xAxis = new Line(0.0f,  0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 220.0f/255.0f, 20.0f/255.0f, 60.0f/255.0f);
         // y-axis in lime green
-        yAxis = new Line(0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+        yAxis = new Line(0.0f,  0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f);
         // z-axis in cyan
-        zAxis = new Line(0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f);
+        zAxis = new Line(0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f);
     }
 
     public void onDrawFrame(GL10 unused) {
-        // Redraw background color
+        // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         float[] scratch = new float[16];
@@ -45,6 +47,7 @@ public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         // Create a rotation transformation for the lines
+        //long time = SystemClock.uptimeMillis() % 4000L;
         float angle = 45.0f;
         Matrix.setRotateM(rotationMatrix, 0, angle, 1.0f, -1.0f, 1.0f);
 
@@ -52,6 +55,9 @@ public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
         // Note that the vPMatrix factor *must be first* in order
         // for the matrix multiplication product to be correct.
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
+
+        // scale matrix with acceleration data, 0.25 is standard length for a not moved phone
+        Matrix.scaleM(scratch, 0, 0.25f + 0.5f*linear_acceleration[0], 0.25f + 0.5f*linear_acceleration[1], 0.25f + 0.5f*linear_acceleration[2]);
 
         xAxis.draw(scratch);
         yAxis.draw(scratch);
@@ -66,7 +72,6 @@ public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
-
     }
 
     public static int loadShader(int type, String shaderCode){

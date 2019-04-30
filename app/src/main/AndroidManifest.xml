@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mis_2019_exercise_3a_sensors">
 
-    <!-- Tell the system this app requires an Accelerometer -->
+    <!-- Tell the system this app requires an AccelerometerService -->
     <uses-feature android:name="android.hardware.sensor.accelerometer"
         android:required="true" />
     <!-- Tell the system this app requires OpenGL ES 2.0. -->
@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,5 +25,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
