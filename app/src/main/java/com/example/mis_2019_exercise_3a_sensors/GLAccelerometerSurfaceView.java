@@ -9,9 +9,6 @@ import android.util.AttributeSet;
 
 // https://developer.android.com/training/graphics/opengl/environment.html
 public class GLAccelerometerSurfaceView extends GLSurfaceView{
-
-    private Sensor sensorAcc;
-
     public GLAccelerometerRenderer renderer;
 
     public GLAccelerometerSurfaceView(Context context, AttributeSet attributeSet) {

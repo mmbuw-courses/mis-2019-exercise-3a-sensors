@@ -16,12 +16,11 @@ public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
     public Line magnitude;
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
-    public float[] linear_acceleration = new float[3];
+    public float[] linear_acceleration = new float[4];
     private final float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private float[] rotationMatrix = new float[16];
-    private float[] scaleMatrix = new float[16];
 
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
@@ -32,6 +31,8 @@ public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
         yAxis = new Line(0.0f,  0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f);
         // z-axis in cyan
         zAxis = new Line(0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 1.0f, 1.0f);
+        // magnitude in white
+        magnitude = new Line(0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 240.0f/255.0f, 248.0f/255.0f, 255.0f/255.0f);
     }
 
     public void onDrawFrame(GL10 unused) {
@@ -46,22 +47,19 @@ public class GLAccelerometerRenderer implements GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        // Create a rotation transformation for the lines
-        //long time = SystemClock.uptimeMillis() % 4000L;
         float angle = 45.0f;
         Matrix.setRotateM(rotationMatrix, 0, angle, 1.0f, -1.0f, 1.0f);
 
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the vPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
+        Matrix.scaleM(scratch, 0, 0.2f + 0.5f*linear_acceleration[0], 0.2f + 0.5f*linear_acceleration[1], 0.2f + 0.5f*linear_acceleration[2]);
 
-        // scale matrix with acceleration data, 0.25 is standard length for a not moved phone
-        Matrix.scaleM(scratch, 0, 0.25f + 0.5f*linear_acceleration[0], 0.25f + 0.5f*linear_acceleration[1], 0.25f + 0.5f*linear_acceleration[2]);
+        Matrix.translateM(vPMatrix, 0, 1.0f, -0.8f, 0.0f);
+        Matrix.scaleM(vPMatrix, 0, 0.3f + 0.5f*linear_acceleration[3], 0.0f, 0.0f);
 
         xAxis.draw(scratch);
         yAxis.draw(scratch);
         zAxis.draw(scratch);
+        magnitude.draw(vPMatrix);
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
