@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Sensor</string>
+    <string name="SampleInit">Sample rate: 20000 ms</string>
+    <string name="WindowInit">Window size: 64</string>
+    <string name="picked_the_device">Picked the Device :</string>
+    <string name="shake_speed">Shake Speed:</string>
+    <string name="flip">Flip:</string>
+    <string name="rotaion">Rotaion :</string>
+    <string name="current_gestures">--------------------------------Current Gestures--------------------------------------</string>
+    <string name="fft_view"> FFT-transformed data</string>
+    <string name="visulization_o_live_accelerometer">Visulization of Live accelerometer Data</string>
+</resources>
