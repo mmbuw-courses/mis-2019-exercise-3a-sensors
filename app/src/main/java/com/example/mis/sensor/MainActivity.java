@@ -60,11 +60,11 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
     private double[] magnitudeArray = new double[windowSize];
 
     // Checking location to determine acceleration
-    //private UserActivity userActivity = UserActivity.static;
-    //private Location lastLocation;
     private boolean locationGranted;
     private LocationManager locationManager;
-    //boolean movingAcceleration;
+    //private UserActivity userActivity = UserActivity.static;
+    //private Location lastLocation;
+    //private boolean accelerationChanges = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +83,12 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
         getSensor();
         getLocation();
 
+        /*
         //initiate and fill example array with random values
         rndAccExamplevalues = new double[64];
         randomFill(rndAccExamplevalues);
         new FFTAsynctask(64).execute(rndAccExamplevalues);
+        */
     }
 
     //
@@ -156,12 +158,12 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
     }
 
-    private void updateLineChart() {
+    private void updateLineChart(SensorEvent event) {
         float x, y, z, magnitude;
-        x = 0;
-        y = 1;
-        z = 2;
-        magnitude = (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+        double x = values[0];
+        double y = values[1];
+        double z = values [2];
+        double magnitude = (float) Math.sqrt((x * x) + (y * y) + (z * z));
 
         if (xAxis.size() >= graph)
             xAxis.remove(0);
@@ -283,7 +285,23 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
     @Override
     public void onLocationChanged(Location location) {
-
+        //double beforeSpeed = 0;
+        //double afterSpeed = 0;
+        //if (lastLocation != null) {
+        //double elapseTime = (location.getTime() - lastLocation.getTime()) / 1000;
+        //afterSpeed = lastLocation.distance(location) / elapseTime;
+        //}
+        //lastLocation = location;
+        //beforeSpeed = location.speed() ? location.getSpeed() : afterSpeed;
+        //if (location != null) {
+        //    afterSpeed = location.getSpeed();
+        //}
+        //if (beforeSpeed <= 3) {
+        //    userActivity = UserActivity.static;
+        //}
+        //if (beforeSpeed > 3) {
+        //    userActivity = UserActivity.moving;
+        //}
     }
 
     @Override
@@ -300,21 +318,18 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
     public void onProviderDisabled(String provider) {
 
     }
-
     /*
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
     }
     */
-
     /*
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
 
     }
     */
-
     /*
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
@@ -334,8 +349,8 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
         private int wsize; //window size must be power of 2
 
         // constructor to set window size
-        FFTAsynctask(int wsize) {
-            this.wsize = wsize;
+        FFTAsynctask(int windowSize) {
+            this.windowSize = windowSize;
         }
 
         @Override
@@ -349,10 +364,10 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
              * Init the FFT class with given window size and run it with your input.
              * The fft() function overrides the realPart and imagPart arrays!
              */
-            FFT fft = new FFT(wsize);
+            FFT fft = new FFT(windowSize);
             fft.fft(realPart, imagPart);
             //init new double array for magnitude (e.g. frequency count)
-            double[] magnitude = new double[wsize];
+            double[] magnitude = new double[windowSize];
 
 
             //fill array with magnitude values of the distribution
