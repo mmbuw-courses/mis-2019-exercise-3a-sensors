@@ -82,16 +82,6 @@
                 android:max="20"
                 android:progress="1"
                 android:min="1" />
-
-            <!--
-            <TextView
-                android:id="@+id/sampleRateValue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textSize="5pt"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"/>
-            -->
         </LinearLayout>
 
         <LinearLayout
@@ -120,46 +110,24 @@
                 android:progress="2"
                 android:max="10"
                 android:min="1"/>
-            <!--
-            <TextView
-                android:id="@+id/fftSeekbarValue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:text="FFT Window Size"
-                android:textSize="5pt"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"/>
-             -->
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:gravity="center"
-                android:text="Location Speed (m/s)"
-                android:textSize="5pt"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"/>
-
-            <TextView
-                android:id="@+id/locationSpeed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="5pt"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"/>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent" />
 
         <CheckBox android:id="@+id/checkbox_meat"
             android:layout_width="wrap_content"

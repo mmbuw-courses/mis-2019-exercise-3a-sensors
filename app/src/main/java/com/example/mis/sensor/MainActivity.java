@@ -55,16 +55,19 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
     // For Seekbars
     private SeekBar samplerateSeekbar, fftSeekbar;
-    private TextView locationSpeed;
+    //private TextView locationSpeed;
     private int samplerate, xAxisInitial = 0, windowSize, magnitudeInitial = 0;
     private double[] magnitudeArray = new double[windowSize];
 
     // Checking location to determine acceleration
     private boolean locationGranted;
     private LocationManager locationManager;
-    //private UserActivity userActivity = UserActivity.static;
-    //private Location lastLocation;
-    //private boolean accelerationChanges = false;
+    private UserActivity userActivity = UserActivity.STATIC;
+    //private UserActivity userActivity = UserActivity.moving;
+    //private UserActivity userActivity;
+    private Location lastLocation;
+    private boolean accelerationChanges = false;
+    public TextView activityText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,29 +79,30 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
         // Sample-rate is written in milisec.
         samplerate = 100000;
         windowSize = 10;
-        //locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationSpeed = (TextView)findViewById(R.id.locationSpeed);
-        locationSpeed.setText("0");
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        activityText = findViewById(R.id.textView);
+        textView();
         getSeekbar();
         getSensor();
         getLocation();
 
-        /*
+
         //initiate and fill example array with random values
         rndAccExamplevalues = new double[64];
         randomFill(rndAccExamplevalues);
         new FFTAsynctask(64).execute(rndAccExamplevalues);
-        */
+
     }
 
-    //
+    // Function for getting seekbar value
+    // Sources: "https://developer.android.com/reference/android/widget/SeekBar.html"
     public void getSeekbar() {
 
-        samplerateSeekbar = (SeekBar)findViewById(R.id.samplerate);
-        fftSeekbar = (SeekBar)findViewById(R.id.seekbarFFT);
+        samplerateSeekbar = findViewById(R.id.samplerate);
+        fftSeekbar = findViewById(R.id.seekbarFFT);
         samplerateSeekbar.incrementProgressBy(1);
 
-        //
+        // Listener function for the seekbars
         samplerateSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -116,7 +120,6 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
                 if( progress == 0 ){
                     progress = 1;
                 }
-                //progress = progress*1000;
                 float temp = progress;
                 temp /= 10;
                 seekBar.setProgress( progress );
@@ -126,9 +129,13 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
                 sensorManager.registerListener(MainActivity.this, sensor, samplerate);
                 updateLineChart();
             }
+
+            private void updateLineChart() {
+
+            }
         });
 
-        //
+        // // Listener function for the seekbars (FFT chart)
         fftSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -158,24 +165,21 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
     }
 
+    // Source: "https://developer.android.com/guide/topics/sensors/sensors_motion.html"
     private void updateLineChart(SensorEvent event) {
         float x, y, z, magnitude;
-        double x = values[0];
-        double y = values[1];
-        double z = values [2];
-        double magnitude = (float) Math.sqrt((x * x) + (y * y) + (z * z));
+        x = event.values[0];
+        y = event.values[1];
+        z = event.values[2];
+        magnitude = (float) Math.sqrt((x * x) + (y * y) + (z * z));
 
-        if (xAxis.size() >= graph)
-            xAxis.remove(0);
-        if(yAxis.size() >= graph)
-            yAxis.remove(0);
-        if(zAxis.size() >= graph)
-            zAxis.remove(0);
-        if(magnitudeChart.size() >= graph)
-            magnitudeChart.remove(0);
+        if (xAxis.size() >= graph) xAxis.remove(0);
+        if (yAxis.size() >= graph) yAxis.remove(0);
+        if (zAxis.size() >= graph) zAxis.remove(0);
+        if (magnitudeChart.size() >= graph) magnitudeChart.remove(0);
 
-        if( magnitudeInitial < magnitudeArray.length){
-            if(magnitudeArray.length <= windowSize){
+        if ( magnitudeInitial < magnitudeArray.length) {
+            if (magnitudeArray.length <= windowSize) {
                 magnitudeArray[magnitudeInitial] =  magnitude;
                 magnitudeInitial++;
             }
@@ -193,7 +197,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
     }
 
     public void updateChartData(){
-        LineChart graph = (LineChart) findViewById(R.id.dataGraph);
+        LineChart graph = findViewById(R.id.dataGraph);
         LineData lineData = new LineData();
         lineData.addDataSet(addLineData( xAxis, "X" , Color.RED));
         lineData.addDataSet(addLineData( yAxis, "Y" , Color.GREEN ));
@@ -208,7 +212,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
     }
 
     private void updateFFTChart() {
-        LineChart fftGraph = (LineChart)findViewById(R.id.fftGraph);
+        LineChart fftGraph = findViewById(R.id.fftGraph);
         List<Entry> magnitudeEntryList = new ArrayList<>();
         for (int i = 0; i < freqCounts.length; i++){
             magnitudeEntryList.add( new Entry(i, (float) freqCounts[i]));
@@ -229,7 +233,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
         return lineDataSet;
     }
 
-    //
+    // Function to get sensor data/value
     public boolean getSensor() {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager != null
@@ -241,7 +245,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
         return false;
     }
 
-    //
+    // Function to get location service
     public void getLocation() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -269,7 +273,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
             FFTAsynctask fftAsyncTask = new FFTAsynctask(windowSize);
             fftAsyncTask.execute(magnitudeArray);
         }
-        updateLineChart();
+        updateLineChart(event);
     }
 
     /*
@@ -285,23 +289,23 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
     @Override
     public void onLocationChanged(Location location) {
-        //double beforeSpeed = 0;
-        //double afterSpeed = 0;
-        //if (lastLocation != null) {
-        //double elapseTime = (location.getTime() - lastLocation.getTime()) / 1000;
-        //afterSpeed = lastLocation.distance(location) / elapseTime;
-        //}
-        //lastLocation = location;
-        //beforeSpeed = location.speed() ? location.getSpeed() : afterSpeed;
-        //if (location != null) {
-        //    afterSpeed = location.getSpeed();
-        //}
-        //if (beforeSpeed <= 3) {
-        //    userActivity = UserActivity.static;
-        //}
-        //if (beforeSpeed > 3) {
-        //    userActivity = UserActivity.moving;
-        //}
+        double beforeSpeed = 0;
+        double afterSpeed = 0;
+        if (lastLocation != null) {
+        double elapseTime = (location.getTime() - lastLocation.getTime()) / 1000;
+        afterSpeed = lastLocation.distanceTo(location) / elapseTime;
+        }
+        lastLocation = location;
+        beforeSpeed = location.hasSpeed() ? location.getSpeed() : afterSpeed;
+        if (location != null) {
+            afterSpeed = location.getSpeed();
+        }
+        if (beforeSpeed <= 3) {
+            userActivity = UserActivity.STATIC;
+        }
+        if (beforeSpeed > 3) {
+            userActivity = UserActivity.MOVING;
+        }
     }
 
     @Override
@@ -346,7 +350,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
     private class FFTAsynctask extends AsyncTask<double[], Void, double[]> {
 
-        private int wsize; //window size must be power of 2
+        private int windowSize; //window size must be power of 2
 
         // constructor to set window size
         FFTAsynctask(int windowSize) {
@@ -358,7 +362,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
 
             double[] realPart = values[0].clone(); // actual acceleration values
-            double[] imagPart = new double[wsize]; // init empty
+            double[] imagPart = new double[windowSize]; // init empty
 
             /**
              * Init the FFT class with given window size and run it with your input.
@@ -371,7 +375,7 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
 
 
             //fill array with magnitude values of the distribution
-            for (int i = 0; wsize > i ; i++) {
+            for (int i = 0; windowSize > i ; i++) {
                 magnitude[i] = Math.sqrt(Math.pow(realPart[i], 2) + Math.pow(imagPart[i], 2));
             }
 
@@ -401,11 +405,30 @@ public abstract class MainActivity extends AppCompatActivity implements SensorEv
     }
 
 
+    private void textView() {
+        activityText = findViewById(R.id.textView);
+        try {
+                if (accelerationChanges) {
+                    switch (userActivity) {
+                        case MOVING:
+                            activityText.setText("Moving");
+                            break;
+                    }
+                } else {
+                    switch (userActivity) {
+                        case STATIC:
+                            activityText.setText("Static");
+                            }
+                }
+
+        } catch (IllegalStateException ex) {
+            System.out.print("IllegalStateException: " + ex.getLocalizedMessage());
+        }
+    }
 
 }
-/*
+// Source: "https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html"
+// Source: "https://stackoverflow.com/questions/6391777/switch-on-enum-in-java"
 enum UserActivity {
-    static,
-    moving
+    MOVING, STATIC
 }
-*/
