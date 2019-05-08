@@ -6,13 +6,107 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+
+  <View
+      android:id="@+id/axesView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:id="@+id/z_Axis"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="163dp"
+      android:text="0"
+      android:textColor="@android:color/holo_blue_dark"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/axesView" />
+
+  <TextView
+      android:id="@+id/y_Axis"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="0"
+      android:textColor="@android:color/holo_green_dark"
+      app:layout_constraintStart_toStartOf="@+id/x_Axis"
+      app:layout_constraintTop_toBottomOf="@+id/x_Axis" />
+
+  <TextView
+      android:id="@+id/x_Axis"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:text="0"
+      android:textColor="@android:color/holo_red_dark"
+      app:layout_constraintStart_toStartOf="@+id/z_Axis"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <com.jjoe64.graphview.GraphView
+      android:id="@+id/accelerometer"
+      android:layout_width="401dp"
+      android:layout_height="297dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.601" />
+
+  <View
+      android:id="@+id/FFTview"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="@+id/axesView"
+      app:layout_constraintTop_toBottomOf="@+id/axesView" />
+
+  <SeekBar
+      android:id="@+id/modSample"
+      style="@style/Widget.AppCompat.SeekBar.Discrete"
+      android:layout_width="315dp"
+      android:layout_height="30dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginEnd="8dp"
+      android:layout_marginBottom="8dp"
+      android:max="3"
+      android:progress="1"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.181" />
+
+  <SeekBar
+      android:id="@+id/modFFT"
+      android:layout_width="0dp"
+      android:layout_height="25dp"
+      android:layout_marginStart="7dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginEnd="7dp"
+      android:layout_marginBottom="8dp"
+      android:max="10"
+      android:progress="5"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="1.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.826"
+      tools:checked="false" />
+
+  <Switch
+      android:id="@+id/switchFFT"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="16dp"
+      android:onClick="Seekbar_toggle"
+      android:text="FFT"
+      app:layout_constraintBottom_toTopOf="@+id/accelerometer"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.1"
+      app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
